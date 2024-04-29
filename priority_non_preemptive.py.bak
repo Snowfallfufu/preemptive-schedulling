@@ -1,0 +1,108 @@
+class PreemptiveSJF:
+
+    def processData(self, process_data):
+        start_time = 0
+        exit_time = 0
+        current_process = None
+        gantt_chart = []
+
+        while True:
+            ready_queue = []
+            for i in range(len(process_data)):
+                if process_data[i][1] <= start_time and process_data[i][2] > 0:
+                    ready_queue.append(process_data[i])
+
+            if len(ready_queue) == 0:
+                start_time += 1
+                continue
+
+            ready_queue.sort(key=lambda x: x[2])  # Sort by remaining burst time
+            if current_process is None or current_process[2] > ready_queue[0][2]:
+                if current_process is not None:
+                    gantt_chart.append((current_process[0], start_time))
+                current_process = ready_queue[0]
+
+            current_process[2] -= 1  # Execute one time unit
+            start_time += 1
+
+            if current_process[2] == 0:
+                gantt_chart.append((current_process[0], start_time))
+                current_process = None
+
+            all_processes_completed = all(p[2] == 0 for p in process_data)
+            if all_processes_completed:
+                break
+
+        self.printGanttChart(gantt_chart)
+        t_time = self.calculateTurnaroundTime(process_data)
+        w_time = self.calculateWaitingTime(process_data)
+        self.printData(process_data, t_time, w_time)
+
+    def calculateTurnaroundTime(self, process_data):
+        total_turnaround_time = 0
+        for i in range(len(process_data)):
+            turnaround_time = process_data[i][3] - process_data[i][1]
+            total_turnaround_time += turnaround_time
+            process_data[i].append(turnaround_time)
+        average_turnaround_time = total_turnaround_time / len(process_data)
+        return average_turnaround_time
+
+    def calculateWaitingTime(self, process_data):
+        total_waiting_time = 0
+        for i in range(len(process_data)):
+            waiting_time = process_data[i][5] - process_data[i][2]
+            total_waiting_time += waiting_time
+            process_data[i].append(waiting_time)
+        average_waiting_time = total_waiting_time / len(process_data)
+        return average_waiting_time
+
+    def printGanttChart(self, gantt_chart):
+        print("\nVertical Gantt Chart")
+        for i in range(len(gantt_chart) - 1):
+            print("+", end="")
+            print("-" * 4 * (gantt_chart[i + 1][1] - gantt_chart[i][1]), end="")
+        print("+")
+        for i in range(len(gantt_chart) - 1):
+            print("|", end="")
+            print(" " * (4 * (gantt_chart[i + 1][1] - gantt_chart[i][1]) - 1), end="")
+            print("P" + str(gantt_chart[i][0]), end="")
+        print("|")
+        for i in range(len(gantt_chart) - 1):
+            print("+", end="")
+            print("-" * 4 * (gantt_chart[i + 1][1] - gantt_chart[i][1]), end="")
+        print("+")
+        print(gantt_chart[0][1], end="")
+        for i in range(len(gantt_chart) - 1):
+            print(" " * (4 * (gantt_chart[i + 1][1] - gantt_chart[i][1])), end="")
+            print(gantt_chart[i + 1][1], end="")
+        print()
+        print()
+
+    def printData(self, process_data, average_turnaround_time, average_waiting_time):
+        process_data.sort(key=lambda x: x[0])
+
+        print("\nProcess Details")
+        print("+---------+-------------------+-------------------+-------------------+----------------------+-------------------+----------------------+")
+        print("| Process | Arrival Time      | Burst Time        | Remaining Time    | Completion Time      | Turnaround Time   | Waiting Time         |")
+        print("+---------+-------------------+-------------------+-------------------+----------------------+-------------------+----------------------+")
+        for i in range(len(process_data)):
+            print(
+                f"| {process_data[i][0]:7} | {process_data[i][1]:17} | {process_data[i][2]:17} | {process_data[i][4]:17} | {process_data[i][3]:20} | {process_data[i][5]:17} | {process_data[i][6]:20} |")
+            print("+---------+-------------------+-------------------+-------------------+----------------------+-------------------+----------------------+")
+
+        print(f"\nAverage Turnaround Time: {average_turnaround_time}")
+        print(f"Average Waiting Time: {average_waiting_time}")
+
+
+if __name__ == "__main__":
+    # Test data for processes: (Process ID, Arrival Time, Burst Time)
+    process_data = [
+        [1, 0, 7],
+        [2, 2, 4],
+        [3, 4, 1],
+        [4, 5, 4],
+        [5, 6, 3],
+    ]
+
+    sjf = PreemptiveSJF()
+    sjf.processData(process_data)

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Main Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    button {
+      background-color: #0047AB;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the Main Page</h1>
+  
+  <button onclick="redirectToPage1()">Go to SJF Preemptive Calculator</button>
+  <button onclick="redirectToPage2()">Go to SJF Non Preemptive Calculator</button>
+  
+  <script>
+    function redirectToPage1() {
+      window.location.href = "sjf_preemptive.php";
+    }
+    
+    function redirectToPage2() {
+      window.location.href = "sjf_non_preemptive.php";
+    }
+  </script>
+</body>
+</html>
